@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsive Weather App</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .app-container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .weather-info {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <h1>Weather App</h1>
+    <input type="text" id="city-input" placeholder="Enter city name">
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div id="weather-info" class="weather-info"></div>
+    <div id="error-message" class="error-message"></div>
+  </div>
+
+  <script>
+    function getWeather() {
+      const cityInput = document.getElementById('city-input');
+      const weatherInfo = document.getElementById('weather-info');
+      const errorMessage = document.getElementById('error-message');
+
+      const apiKey = '3fc4faf39a3e610149e1c71cc5f6d1a6'; // Replace with your API key
+      const city = cityInput.value;
+
+      // Clear previous data
+      weatherInfo.innerHTML = '';
+      errorMessage.textContent = '';
+
+      // Check if the city input is not empty
+      if (city.trim() === '') {
+        errorMessage.textContent = 'Please enter a city name.';
+        return;
+      }
+
+      // Fetch weather data from OpenWeatherMap API
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod === '404') {
+            errorMessage.textContent = 'City not found. Please enter a valid city name.';
+          } else {
+            displayWeather(data);
+          }
+        })
+        .catch(error => {
+          errorMessage.textContent = 'Error fetching weather data. Please try again later.';
+        });
+    }
+
+    function displayWeather(data) {
+      const weatherInfo = document.getElementById('weather-info');
+
+      const cityName = data.name;
+      const temperature = data.main.temp;
+      const description = data.weather[0].description;
+
+      const weatherDetails = `
+        <p>City: ${cityName}</p>
+        <p>Temperature: ${temperature} °C</p>
+        <p>Description: ${description}</p>
+      `;
+
+      weatherInfo.innerHTML = weatherDetails;
+    }
+  </script>
+
+</body>
+</html>
